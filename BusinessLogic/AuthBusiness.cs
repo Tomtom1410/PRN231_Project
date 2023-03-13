@@ -1,4 +1,4 @@
-﻿using BusinessLogic.Dtos;
+﻿using DataAccess.Dtos;
 using BusinessLogic.Interfaces;
 using Repositories.Interfaces;
 using System;
