@@ -1,6 +1,7 @@
 ﻿using DataAccess.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace WebClientProject.Controllers
@@ -30,6 +31,11 @@ namespace WebClientProject.Controllers
 
             var account = JsonSerializer.Deserialize<AccountDto>(accountValue);
             return account;
+        }
+
+        protected string GetToken()
+        {
+            return HttpContext.Session.GetString("AccessToken");
         }
     }
 }

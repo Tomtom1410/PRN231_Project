@@ -18,7 +18,7 @@ namespace BusinessLogic
         }
         public async Task<AccountDto> GetAccountAsync(string? username, string? password)
         {
-            var account = await _accountRepository.getAccountAsync(username, password) ;
+            var account = await _accountRepository.GetAccountAsync(username, password) ;
             if (account == null)
             {
                 return null;

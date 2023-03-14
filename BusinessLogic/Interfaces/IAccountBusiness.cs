@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repositories.Interfaces
+namespace BusinessLogic.Interfaces
 {
-    public interface IAccountRepositoy
+    public interface IAccountBusiness
     {
-        Task<Account> GetAccountAsync(string? username, string? password);
         Task<Account> GetAccountById(long accountId);
     }
 }

@@ -69,10 +69,7 @@ namespace WebApiProject.Controllers
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                 var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                var token = new JwtSecurityToken(
-                    _configuration["Jwt:Issuer"],
-                    _configuration["Jwt:Audience"],
-                    claims,
+                var token = new JwtSecurityToken(null, null, claims,
                     expires: DateTime.UtcNow.AddMinutes(30),
                     signingCredentials: signIn);
 

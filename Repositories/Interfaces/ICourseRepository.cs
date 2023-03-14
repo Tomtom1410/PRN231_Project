@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Repositories.Interfaces
 {
-    public interface IAccountRepositoy
+    public interface ICourseRepository
     {
-        Task<Account> GetAccountAsync(string? username, string? password);
-        Task<Account> GetAccountById(long accountId);
+        Task<List<CourseAccount>> GetCoursesByAccount(Account account);
     }
 }

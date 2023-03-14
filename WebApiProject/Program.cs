@@ -2,6 +2,7 @@
 using BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Repositories;
 using Repositories.Interfaces;
@@ -22,11 +23,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     // Tùy chọn này tạo ra một đối tượng TokenValidationParameters để cấu hình các thông số để xác thực và giải mã JWT.
     options.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
     };
 });
 
@@ -36,9 +36,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<Prn231ProjectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("prn_db")));
-builder.Services.AddCors();
+//builder.Services.AddCors();
 builder.Services.AddScoped<IAuthBusiness, AuthBusiness>();
 builder.Services.AddScoped<IAccountRepositoy, AccountRepository>();
+builder.Services.AddScoped<IAccountBusiness, AccountBusiness>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ICourseBusiness, CourseBusiness>();
 
 var app = builder.Build();
 
@@ -47,16 +50,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    IdentityModelEventSource.ShowPII = true;
 }
+
+app.UseRouting();
 app.UseCors(builder =>
  builder.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
-app.UseHttpsRedirection();
-
-#region Add Authentication
-
 app.UseAuthentication();
-
-#endregion
 app.UseAuthorization();
 
 app.MapControllers();
