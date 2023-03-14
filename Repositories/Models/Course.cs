@@ -11,7 +11,7 @@ public partial class Course
 
     public string? CourseName { get; set; }
 
-    public virtual ICollection<Account> Accounts { get; } = new List<Account>();
+    public virtual ICollection<CourseAccount> CourseAccounts { get; } = new List<CourseAccount>();
 
     public virtual ICollection<Class> Classes { get; } = new List<Class>();
 }

@@ -17,9 +17,9 @@ public partial class Account
 
     public DateTime? Dob { get; set; }
 
-    public virtual ICollection<Class> Classes { get; } = new List<Class>();
+    public virtual ICollection<CourseAccount> CourseAccounts { get; } = new List<CourseAccount>();
 
-    public virtual ICollection<Course> Courses { get; } = new List<Course>();
+    public virtual ICollection<Class> Classes { get; } = new List<Class>();
 
     public virtual ICollection<Document> Documents { get; } = new List<Document>();
 }
