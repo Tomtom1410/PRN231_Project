@@ -1,9 +1,10 @@
 ﻿using DataAccess.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 
 namespace WebClientProject.Controllers
 {
@@ -22,20 +23,18 @@ namespace WebClientProject.Controllers
             }
             
             var token = GetToken();
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var url = _url + $"GetAllCourseByUser/{account.Id}";
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("Authorization", "Bearer " + token);
-            HttpResponseMessage responseMessage = await httpClient.SendAsync(request);
+            HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
             switch (responseMessage.StatusCode)
             {
                 case System.Net.HttpStatusCode.OK:
                     var response = await responseMessage.Content.ReadFromJsonAsync<List<CourseDto>>();
-                   
+                    SetListCourseOfUser(response);
+                    ViewBag.Courses = response;
                     return View();
                 case System.Net.HttpStatusCode.NotFound:
-                    ViewData["msg"] = "Username or password is in valid. Please try again!";
-                    return View("Error");
+                    return NotFound();
                 case System.Net.HttpStatusCode.Forbidden:
                     return Forbid();
                 case System.Net.HttpStatusCode.Unauthorized:
@@ -43,6 +42,11 @@ namespace WebClientProject.Controllers
             }
 
             return View();
+        }
+
+        private void SetListCourseOfUser(List<CourseDto> courses)
+        {
+            HttpContext.Session.SetString("listCourse", JsonSerializer.Serialize(courses));
         }
     }
 }

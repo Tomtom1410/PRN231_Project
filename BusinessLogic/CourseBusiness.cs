@@ -14,7 +14,7 @@ namespace BusinessLogic
     {
         private readonly ICourseRepository _courseRepository;
 
-        public CourseBusiness (ICourseRepository courseRepository)
+        public CourseBusiness(ICourseRepository courseRepository)
         {
             _courseRepository = courseRepository;
         }
@@ -24,21 +24,52 @@ namespace BusinessLogic
             var listCourse = await _courseRepository.GetCoursesByAccount(account);
 
             var response = new List<CourseDto>();
-            foreach (var course in listCourse) {
+            foreach (var course in listCourse)
+            {
+                var author = await _courseRepository.GetAuthorOfCourse(course.CourseId);
                 var courseDto = new CourseDto()
                 {
                     Id = course.CourseId,
                     CourseCode = course.Course?.CourseCode,
                     CourseName = course.Course?.CourseName,
                     Author = new AccountDto()
-                    {
-                        Id = account.Id,
-                        FullName = account.FullName,
-                        IsTeacher = account.IsTeacher,
-                    }
+                    { 
+                        Id = author.Id, 
+                        Username = author.Username,
+                        FullName = author.FullName,
+                    },
                 };
                 response.Add(courseDto);
             }
+            return response;
+        }
+
+        public async Task<CourseDto> GetCourseById(long courseId)
+        {
+            var course = await _courseRepository.GetCourseById(courseId);
+
+            if (course == null)
+            {
+                return null;
+            }
+            var author = await _courseRepository.GetAuthorOfCourse(courseId);
+            var students = await _courseRepository.GetStudentsOfCourse(courseId);
+
+            var studentsResponse = students.Select(x => new AccountDto { Id = x.Id, FullName = x.FullName, Username = x.Username}).ToList();
+            var response = new CourseDto()
+            {
+                Id = course.Id,
+                CourseCode = course.CourseCode,
+                CourseName = course.CourseName,
+                Author = new AccountDto()
+                {
+                    Id = author.Id,
+                    Username = author.Username,
+                    FullName = author.FullName,
+                },
+                Students = studentsResponse
+            };
+
             return response;
         }
     }

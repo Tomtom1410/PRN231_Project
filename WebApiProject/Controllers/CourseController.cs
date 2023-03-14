@@ -7,7 +7,7 @@ namespace WebApiProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class CourseController : ControllerBase
     {
         private readonly ICourseBusiness _courseBusiness;
@@ -31,6 +31,19 @@ namespace WebApiProject.Controllers
 
             var courses = await _courseBusiness.GetCourseByAccount(account);
             return Ok(courses);
+        }
+
+        [HttpGet]
+        [Route("{courseId}")]
+        public async Task<IActionResult> GetCourseById([FromRoute] long courseId)
+        {
+            var course = await _courseBusiness.GetCourseById(courseId);
+
+            if(course == null)
+            {
+                return NotFound();
+            }
+            return Ok(course);
         }
     }
 }

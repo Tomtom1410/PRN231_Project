@@ -9,6 +9,9 @@ namespace Repositories.Interfaces
 {
     public interface ICourseRepository
     {
+        Task<Account> GetAuthorOfCourse(long courseId);
+        Task <Course> GetCourseById(long courseId);
         Task<List<CourseAccount>> GetCoursesByAccount(Account account);
+        Task<List<Account>> GetStudentsOfCourse(long courseId);
     }
 }

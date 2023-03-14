@@ -1,0 +1,11 @@
+﻿@model DataAccess.Dtos.CourseDto
+
+@{
+    ViewData["Title"] = Model.CourseCode + " " + Model.Author?.FullName;
+}
+
+<h1>@(Model.CourseCode + " " + Model.Author?.FullName)</h1>
+
+<div>
+    
+</div>

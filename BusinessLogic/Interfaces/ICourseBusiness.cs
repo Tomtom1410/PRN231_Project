@@ -11,5 +11,6 @@ namespace BusinessLogic.Interfaces
     public interface ICourseBusiness
     {
         Task <List<CourseDto>> GetCourseByAccount(Account account);
+        Task <CourseDto> GetCourseById(long courseId);
     }
 }

@@ -37,5 +37,17 @@ namespace WebClientProject.Controllers
         {
             return HttpContext.Session.GetString("AccessToken");
         }
+
+        protected List<CourseDto> GetListCourseOfUser()
+        {
+            string listCourseKey = HttpContext.Session.GetString("listCourse");
+            if (listCourseKey == null)
+            {
+                return null;
+            }
+
+            var listCourse = JsonSerializer.Deserialize<List<CourseDto>>(listCourseKey);
+            return listCourse;
+        }
     }
 }
