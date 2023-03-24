@@ -25,9 +25,9 @@ public partial class Prn231ProjectContext : DbContext
 
     public virtual DbSet<Document> Documents { get; set; }
 
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("server=(local); database=PRN231_Project;uid=sa;pwd=NTQ@1234;Trusted_Connection=True;TrustServerCertificate=True;");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("server=(local); database=PRN231_Project;uid=sa;pwd=dang050401;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,25 +55,6 @@ public partial class Prn231ProjectContext : DbContext
                         j.ToTable("Class_Account");
                         j.IndexerProperty<long>("AccountId").HasColumnName("Account_id");
                         j.IndexerProperty<long>("ClassId").HasColumnName("Class_id");
-                    });
-
-            entity.HasMany(d => d.Documents).WithMany(p => p.Accounts)
-                .UsingEntity<Dictionary<string, object>>(
-                    "DocumentAccount",
-                    r => r.HasOne<Document>().WithMany()
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_Document_Account_Documents"),
-                    l => l.HasOne<Account>().WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_Document_Account_Accounts"),
-                    j =>
-                    {
-                        j.HasKey("AccountId", "DocumentId");
-                        j.ToTable("Document_Account");
-                        j.IndexerProperty<long>("AccountId").HasColumnName("Account_id");
-                        j.IndexerProperty<long>("DocumentId").HasColumnName("Document_id");
                     });
         });
 
@@ -134,6 +115,14 @@ public partial class Prn231ProjectContext : DbContext
             entity.Property(e => e.DocumentName).HasMaxLength(50);
             entity.Property(e => e.DocumentOriginalName).HasMaxLength(50);
             entity.Property(e => e.PathFile).HasMaxLength(255);
+
+            entity.HasOne(d => d.Account).WithMany(p => p.Documents)
+                .HasForeignKey(d => d.AccountId)
+                .HasConstraintName("FK_Documents_Accounts");
+
+            entity.HasOne(d => d.Course).WithMany(p => p.Documents)
+                .HasForeignKey(d => d.CourseId)
+                .HasConstraintName("FK_Documents_Courses");
         });
 
         OnModelCreatingPartial(modelBuilder);
