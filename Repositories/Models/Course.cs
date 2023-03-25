@@ -13,5 +13,7 @@ public partial class Course
 
     public virtual ICollection<CourseAccount> CourseAccounts { get; } = new List<CourseAccount>();
 
+    public virtual ICollection<Document> Documents { get; } = new List<Document>();
+
     public virtual ICollection<Class> Classes { get; } = new List<Class>();
 }

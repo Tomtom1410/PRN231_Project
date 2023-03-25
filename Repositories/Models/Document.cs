@@ -15,5 +15,11 @@ public partial class Document
 
     public string? PathFile { get; set; }
 
-    public virtual ICollection<Account> Accounts { get; } = new List<Account>();
+    public long? CourseId { get; set; }
+
+    public long? AccountId { get; set; }
+
+    public virtual Account? Account { get; set; }
+
+    public virtual Course? Course { get; set; }
 }
