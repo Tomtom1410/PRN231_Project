@@ -4,10 +4,10 @@
 @{
 }
 
-<div>My Courses</div>
+<div style="color:#fffdfd">My Courses</div>
 @if (ViewBag.Courses != null)
 {
-	<ul style="list-style-type: none; text-decoration: none;">
+	<ul style="list-style-type: none; text-decoration: none" >
 		@foreach (var c in ViewBag.Courses)
 		{
 			<li><a style="text-decoration: none;" href="/Course/Details/@c.Id">@(c.CourseName + " " + c.Author?.FullName)</a></li>

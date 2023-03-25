@@ -3,14 +3,39 @@
 @{
     ViewData["Title"] = Model.CourseCode + " " + Model.Author?.FullName;
 }
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<div class="setting" style="
+    display: flex;
+    justify-content: space-between;
+">
+    <h1>@(Model.CourseCode + " " + Model.Author?.FullName + " " + Model.Author?.IsTeacher)</h1>
 
-<h1>@(Model.CourseCode + " " + Model.Author?.FullName)</h1>
+    <select id="cars" name="cars" style="float: right;">
+        <option disabled selected>Setting</option>
+        @if (Model.Author?.IsTeacher == true)
+        {
+
+            <option value="">Delete course</option>
+            <option value="">Edit course</option>
+        }
+        else
+        {
+            <option value="">Upload document</option>
+        }
+    </select>
+</div>
+
+
 
 <div>
     @if (ViewBag.Documents != null)
     {
-        foreach(var document in ViewBag.Documents){
-            <a href="@document.DocumentName">@document.DocumentName</a><br/>
+        foreach (var document in ViewBag.Documents)
+        {
+            <a href="@document.DocumentName">@document.DocumentName</a>
+
+            <br />
         }
     }
+
 </div>
