@@ -7,5 +7,10 @@
 <h1>@(Model.CourseCode + " " + Model.Author?.FullName)</h1>
 
 <div>
-    
+    @if (ViewBag.Documents != null)
+    {
+        foreach(var document in ViewBag.Documents){
+            <a href="@document.DocumentName">@document.DocumentName</a><br/>
+        }
+    }
 </div>

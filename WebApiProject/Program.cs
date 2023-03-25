@@ -8,12 +8,14 @@ using Repositories;
 using Repositories.Interfaces;
 using Repositories.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles); // cái này để ignore cycle khi include;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 #region Add Authentication Service 
@@ -38,10 +40,12 @@ builder.Services.AddDbContext<Prn231ProjectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("prn_db")));
 //builder.Services.AddCors();
 builder.Services.AddScoped<IAuthBusiness, AuthBusiness>();
-builder.Services.AddScoped<IAccountRepositoy, AccountRepository>();
 builder.Services.AddScoped<IAccountBusiness, AccountBusiness>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseBusiness, CourseBusiness>();
+builder.Services.AddScoped<IDocumentBusiness, DocumentBusiness>();
+builder.Services.AddScoped<IAccountRepositoy, AccountRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 
 var app = builder.Build();
 
