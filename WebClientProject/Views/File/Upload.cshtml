@@ -4,10 +4,10 @@
 
 <h1>Upload File</h1>
 <form method="post" enctype="multipart/form-data" asp-controller="File" asp-action="Upload">
-	<input type="file" name="formFile" /> <br/>
+	<div style="display:flex">
+		<input type="file" name="formFile" style="padding-right: 60px;" /> <br />
 	<input type="submit" value="Submit" />
-	<hr />
+	<br/>
+	</div>
 	<h4>@ViewData["Message"]</h4>
-
-
 </form>
