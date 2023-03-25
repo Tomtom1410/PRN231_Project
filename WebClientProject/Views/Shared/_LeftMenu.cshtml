@@ -3,14 +3,30 @@
 *@
 @{
 }
+<div>
+	<h3>Search Course</h3>
+	<form method="get" asp-controller="Course" asp-action="Index" id="searchCourseFrom">
+		<input value="@ViewData["textSearch"]" type="text" name="txtSearch" id="txtSearch" class="form-control" />
+	</form>
+
+</div>
 
 <div>My Courses</div>
-@if (ViewBag.Courses != null)
-{
-	<ul style="list-style-type: none; text-decoration: none;">
-		@foreach (var c in ViewBag.Courses)
-		{
-			<li><a style="text-decoration: none;" href="/Course/Details/@c.Id">@(c.CourseName + " " + c.Author?.FullName)</a></li>
+<div style="text-align:center;">
+	@if (ViewBag.Courses != null)
+	{
+		<ul style="list-style-type: none; text-decoration: none;">
+			@foreach (var c in ViewBag.Courses)
+			{
+				<li><a style="text-decoration: none;" href="/Course/Details/@c.Id">@(c.CourseName + " " + c.Author?.FullName)</a></li>
+			}
+		</ul>
+	}
+</div>
+<script>
+	$(document).keypress(function (event) {
+		if (event.which == '13') {
+			$("#searchCourseFrom").submit();
 		}
-	</ul>
-}
+	});
+</script>

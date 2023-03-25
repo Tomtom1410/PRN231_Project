@@ -1,0 +1,16 @@
+﻿@model DataAccess.Dtos.CourseDto;
+
+<h2>Enrolment options</h2>
+<div class="row" style="margin-top: 2%; padding: 1% 0; padding-left: 2%;">
+	<div class="col-md-4" style="width:25%; margin-right: 2%; box-shadow: 0px 0px 14px 0px #616161; justify-content: center;padding: 2%;margin-bottom: 2%; border-radius: 5%;">
+		<img style="height: 5rem;" src="~/Download/heart.jpg" />
+		<hr />
+		<p style="justify-items:center;">Course Name: @Model.CourseName</p>
+		<p style="justify-items:center;">Tearch: @Model.Author?.FullName</p>
+		<form method="post" action="Enroll">
+			<input type="hidden" asp-for="Id" />
+			<button type="submit" class="btn btn-danger">Enroll Course</button>
+		</form>
+	</div>
+	
+</div>

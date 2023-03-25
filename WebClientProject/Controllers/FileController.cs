@@ -29,6 +29,12 @@ namespace WebClientProject.Controllers
                 return Redirect("../Auth/Login");
             }
             ViewBag.LeftMenu = true;
+            var courses = await GetListCourseOfUserAsync();
+            if (courses == null)
+            {
+                return View("Error");
+            }
+            ViewBag.Courses = courses;
             return View();
         }
 
@@ -73,7 +79,7 @@ namespace WebClientProject.Controllers
                 switch (responseMessage.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
-                        var courses = GetListCourseOfUser();
+                        var courses = await GetListCourseOfUserAsync();
                         if (courses == null)
                         {
                             return View("Error");

@@ -1,6 +1,7 @@
 ﻿using DataAccess.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 
@@ -38,16 +39,22 @@ namespace WebClientProject.Controllers
             return HttpContext.Session.GetString("AccessToken");
         }
 
-        protected List<CourseDto> GetListCourseOfUser()
+        protected async Task<List<CourseDto>> GetListCourseOfUserAsync()
         {
-            string listCourseKey = HttpContext.Session.GetString("listCourse");
-            if (listCourseKey == null)
+            var account = GetSession();
+            var token = GetToken();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var url =$"https://localhost:7212/api/Course/GetAllCourseByUser/{account.Id}";
+            HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
+            switch (responseMessage.StatusCode)
             {
-                return null;
-            }
+                case System.Net.HttpStatusCode.OK:
+                    var response = await responseMessage.Content.ReadFromJsonAsync<List<CourseDto>>();
+                    return response;
+                default:
+                    return null;
 
-            var listCourse = JsonSerializer.Deserialize<List<CourseDto>>(listCourseKey);
-            return listCourse;
+            }
         }
     }
 }

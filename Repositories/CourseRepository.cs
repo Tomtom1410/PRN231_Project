@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Repositories.Interfaces;
 using Repositories.Models;
 using System;
@@ -12,10 +13,27 @@ namespace Repositories
     public class CourseRepository : ICourseRepository
     {
         private readonly Prn231ProjectContext _dbContext;
+        private readonly ILogger<CourseRepository> _logger;
 
-        public CourseRepository(Prn231ProjectContext dbContext)
+        public CourseRepository(Prn231ProjectContext dbContext, ILogger<CourseRepository> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
+        }
+
+        public async Task<bool> EnrollAsync(CourseAccount course)
+        {
+            try
+            {
+                await _dbContext.CourseAccounts.AddAsync(course);
+                var result = await _dbContext.SaveChangesAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
         }
 
         public async Task<Account> GetAuthorOfCourse(long courseId)
@@ -51,6 +69,33 @@ namespace Repositories
                 .Where(x => x.CourseId == courseId && x.IsAuthor == false).ToListAsync();
 
             return courseAccount.Select(x => x.Account).ToList();
+        }
+
+        public async Task<List<Course>> SearchAsync(string textSearch)
+        {
+            return await _dbContext.Courses
+                .Where(x => x.CourseName.ToLower().Contains(textSearch.ToLower())
+                || x.CourseCode.ToLower().Contains(textSearch.ToLower()))
+                .OrderBy(x => x.CourseName)
+                .ToListAsync();
+        }
+
+        public async Task<bool> UnEnrollAsync(CourseAccount course)
+        {
+            var transition = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                 _dbContext.CourseAccounts.Remove(course);
+                var result = await _dbContext.SaveChangesAsync();
+                await transition.CommitAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                await transition.RollbackAsync();
+                return false;
+            }
         }
     }
 }

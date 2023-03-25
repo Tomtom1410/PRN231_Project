@@ -1,7 +1,9 @@
 ﻿using BusinessLogic.Interfaces;
+using DataAccess.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.Models;
 
 namespace WebApiProject.Controllers
 {
@@ -44,6 +46,50 @@ namespace WebApiProject.Controllers
                 return NotFound();
             }
             return Ok(course);
+        }
+
+        [HttpGet]
+        [Route("Search/{textSearch}")]
+        public async Task<IActionResult> SearchAsync([FromRoute] string textSearch)
+        {
+            var courses = await _courseBusiness.SearchAsync(textSearch);
+            return Ok(courses);
+        }
+
+        [HttpPost]
+        [Route("Enroll")]
+        public async Task<IActionResult> Enroll([FromBody] CourseAccountDto model)
+        {
+            var course = new CourseAccount
+            {
+                AccountId = model.AccountId,
+                CourseId = model.CourseId,
+                IsAuthor = model.IsAuthor,
+            };
+            var result = await _courseBusiness.EnrollCourseAsync(course);
+            if (!result)
+            {
+                return Conflict();
+            }
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("UnEnroll")]
+        public async Task<IActionResult> UnEnroll([FromBody] CourseAccountDto model)
+        {
+            var course = new CourseAccount
+            {
+                AccountId = model.AccountId,
+                CourseId = model.CourseId,
+                IsAuthor = model.IsAuthor,
+            };
+            var result = await _courseBusiness.UnEnrollCourseAsync(course);
+            if (!result)
+            {
+                return Conflict();
+            }
+            return Ok();
         }
     }
 }

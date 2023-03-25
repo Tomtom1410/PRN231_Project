@@ -1,18 +1,40 @@
 ﻿@model DataAccess.Dtos.CourseDto
 
 @{
-    ViewData["Title"] = Model.CourseCode + " " + Model.Author?.FullName;
+	ViewData["Title"] = Model.CourseCode + " " + Model.Author?.FullName;
 }
 
 <h1>@(Model.CourseCode + " " + Model.Author?.FullName)</h1>
 
-<div>
-    @if (ViewBag.Documents != null)
-    {
-        foreach(var document in ViewBag.Documents){
-            <a href="@Url.Action("Download", "File", 
+<div class="row">
+	<div class=" col-md-10">
+		@if (ViewBag.Documents != null)
+		{
+			foreach (var document in ViewBag.Documents)
+			{
+				<a href="@Url.Action("Download", "File",
             new { fileName = document.DocumentName, contentType = document.ContentType })">@document.DocumentOriginalName</a>
-            <br />
-        }
-    }
+				<br />
+			}
+		}
+	</div>
+	<div class=" col-md-2">
+		<div class="dropdown">
+			<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+				Options
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				@if (ViewBag.isTeacher)
+				{
+					<li><a style="text-decoration: none; padding-left: 8%;" href="@Url.Action("Upload", "File", new { id = Model.Id})">Upload Document</a></li>
+					<li><a style="text-decoration: none; padding-left: 8%;" href="@Url.Action("Course", "Edit", new { id = Model.Id})">Edit Course</a></li>
+				}
+				else
+				{
+					<li><a style="text-decoration: none; padding-left: 8%;" href="@Url.Action("UnEnroll", "Course", new { id = Model.Id})">Unenroll Course</a></li>
+				}
+			</ul>
+		</div>
+	</div>
 </div>
+
