@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using DataAccess.Dtos;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebClientProject.Controllers
@@ -9,6 +10,7 @@ namespace WebClientProject.Controllers
         private const string _url = "https://localhost:7212/api/File/";
         private readonly HttpClient _httpClient = null;
         private readonly IWebHostEnvironment _environment;
+        private const string FOLDER_NAME = "Download";
 
         public FileController(IWebHostEnvironment webHost)
         {
@@ -39,7 +41,7 @@ namespace WebClientProject.Controllers
                 return Redirect("../Auth/Login");
             }
 
-            string downloadFolder = Path.Combine(_environment.WebRootPath, "Download");
+            string downloadFolder = Path.Combine(_environment.WebRootPath, FOLDER_NAME);
             if (!Directory.Exists(downloadFolder))
             {
                 Directory.CreateDirectory(downloadFolder);
@@ -48,7 +50,7 @@ namespace WebClientProject.Controllers
             ViewBag.LeftMenu = true;
             string fileExtention = Path.GetExtension(formFile.FileName);
             var fileName = Guid.NewGuid().ToString() + fileExtention;
-            var pathFile = Path.Combine(_environment.WebRootPath, "Download", fileName);
+            var pathFile = Path.Combine(_environment.WebRootPath, FOLDER_NAME, fileName);
             
             var document = new DocumentDto
             {
@@ -96,5 +98,30 @@ namespace WebClientProject.Controllers
                 return View();
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadAsync(string fileName, string contentType)
+        {
+            string downloadFolder = Path.Combine(_environment.WebRootPath, FOLDER_NAME);
+
+            string filePath = Path.Combine(downloadFolder, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            // Đọc tệp tin vào bộ nhớ
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            // Trả về File để download
+            return File(memory, contentType, Path.GetFileName(filePath));
+        }
+
     }
 }

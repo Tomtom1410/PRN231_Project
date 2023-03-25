@@ -10,7 +10,9 @@
     @if (ViewBag.Documents != null)
     {
         foreach(var document in ViewBag.Documents){
-            <a href="@document.DocumentName">@document.DocumentName</a><br/>
+            <a href="@Url.Action("Download", "File", 
+            new { fileName = document.DocumentName, contentType = document.ContentType })">@document.DocumentOriginalName</a>
+            <br />
         }
     }
 </div>
