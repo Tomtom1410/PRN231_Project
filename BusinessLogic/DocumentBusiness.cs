@@ -29,6 +29,26 @@ namespace BusinessLogic
             return response;
         }
 
+        public async Task<List<DocumentDto>> GetDocumentsByUserAsync(long id)
+        {
+
+            var documents = await _documentRepository.GetDocumentsByUserAsync(id);
+            var response = documents.Select(x => new DocumentDto
+            {
+                Id = x.Id,
+                PathFile = x.PathFile,
+                DocumentOriginalName = x.DocumentOriginalName,
+                DocumentName = x.DocumentName,
+                ContentType = x.ContentType,
+                AccountId = x.AccountId,
+                CourseId = id,
+            }).ToList();
+            return response;
+
+
+        }
+
+
         public async Task<bool> saveFileInfoAsync(Document documentEntity)
         {
             return await _documentRepository.SaveFileInfoAsync(documentEntity);

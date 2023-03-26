@@ -28,6 +28,12 @@ namespace Repositories
                 .Where(x => x.CourseId == courseId && x.Account.IsTeacher == true).ToListAsync();
         }
 
+        public async Task<List<Document>> GetDocumentsByUserAsync(long id)
+        {
+            return await _dbContext.Documents
+                .Where(x => x.AccountId == id).ToListAsync();
+        }
+
         public async Task<bool> SaveFileInfoAsync(Document documentEntity)
         {
             try

@@ -4,15 +4,15 @@
 @{
 }
 <div>
-	<h3>Search Course</h3>
+	<h3 style="color:#ffffff">Search Course</h3>
 	<form method="get" asp-controller="Course" asp-action="Index" id="searchCourseFrom">
 		<input value="@ViewData["textSearch"]" type="text" name="txtSearch" id="txtSearch" class="form-control" />
 	</form>
 
 </div>
 
-<div>My Courses</div>
-<div style="text-align:center;">
+<div style="color:#ffffff">My Courses</div>
+<div >
 	@if (ViewBag.Courses != null)
 	{
 		<ul style="list-style-type: none; text-decoration: none;">

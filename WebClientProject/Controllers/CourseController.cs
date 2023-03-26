@@ -9,6 +9,7 @@ namespace WebClientProject.Controllers
     {
         private const string _url = "https://localhost:7212/api/Course/";
         private const string _urlDocument = "https://localhost:7212/api/File/";
+        private const string _urlDocumentForUser = "https://localhost:7212/api/Document/";
         private const int pageSize = 4;
 
         public async Task<IActionResult> Index(string txtSearch, int page = 1)
@@ -57,6 +58,15 @@ namespace WebClientProject.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Edit(long id)
+        {
+            ViewBag.LeftMenu = true;
+            return View();
+        }
+
+
+
+
         public async Task<IActionResult> Details(long id)
         {
             var account = GetSession();
@@ -64,9 +74,13 @@ namespace WebClientProject.Controllers
             {
                 return Redirect("../Auth/Login");
             }
+            var url = _urlDocumentForUser + $"GetDocByUser/{account.Id}";
+            //HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
+
 
             ViewBag.LeftMenu = true;
             ViewBag.isTeacher = account.IsTeacher;
+
             var token = GetToken();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage responseMessage = await httpClient.GetAsync(_url + id);
@@ -80,6 +94,7 @@ namespace WebClientProject.Controllers
                         return View("Error");
                     }
                     ViewBag.Documents = await GetDocumentOfCourse(id);
+                    ViewBag.DocUser = await GetDocumentByUser(account.Id);
                     ViewBag.Courses = courses;
                     return View(response);
 
@@ -100,6 +115,21 @@ namespace WebClientProject.Controllers
             var token = GetToken();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var url = _urlDocument + $"GetDocumentsByCourse/{id}";
+            HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
+            switch (responseMessage.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    var response = await responseMessage.Content.ReadFromJsonAsync<List<DocumentDto>>();
+                    return response;
+                default:
+                    return null;
+            }
+        }
+        private async Task<List<DocumentDto>> GetDocumentByUser(long? id)
+        {
+            var token = GetToken();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var url = _urlDocumentForUser + $"GetDocByUser/{id}";
             HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
             switch (responseMessage.StatusCode)
             {

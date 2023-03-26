@@ -11,5 +11,6 @@ namespace Repositories.Interfaces
 	{
 		Task<List<Document>> GetDocumentsByCourseAsync(long courseId);
 		Task<bool> SaveFileInfoAsync(Document documentEntity);
-	}
+        Task<List<Document>> GetDocumentsByUserAsync(long id);
+    }
 }
