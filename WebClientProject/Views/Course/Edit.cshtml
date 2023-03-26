@@ -8,9 +8,9 @@
 
 <div class="row">
 	<div class=" col-md-10">
-		<input type="hidden" id="courseId" value="@Model.Id"/>
+		<input type="hidden" id="courseId" value="@Model.Id" />
 		@if (ViewBag.Documents != null && ViewBag.Documents.Count > 0)
-		{	
+		{
 			<h4>Documents:</h4>
 			foreach (var document in ViewBag.Documents)
 			{
@@ -22,28 +22,32 @@
 				</div>
 			}
 			<div class="text-danger" id="msg"></div>
-			<div style="float: right; margin-top:2%;"><button type="button" id="btnRemove" class="btn btn-danger">Remove</button></div>
+			<hr />
+			<div style="float: right; margin-top:2%;">
+				<button type="button" id="btnRemove" class="btn btn-danger">Remove</button> ||
+				<a href="@Url.Action("Details", "Course", new {Id = Model.Id})">Back to course</a>
+			</div>
 		}
 	</div>
 </div>
 <script>
-	document.addEventListener("DOMContentLoaded", () =>{
-		$("#btnRemove").on("click", function(){
+	document.addEventListener("DOMContentLoaded", () => {
+		$("#btnRemove").on("click", function () {
 			var documents = $('input[name="documentId"]:checked').map(function () {
 				return this.value;
 			}).get();
 
 			$.ajax({
-				url: 'Edit', 
+				url: 'Edit',
 				method: 'POST',
 				data: {
 					documents: documents
 				},
 				success: function (response) {
-					if(response == 'success'){
+					if (response == 'success') {
 						let courseId = $("#courseId").val();
 						window.location.href = `../Details/${courseId}`;
-					}else{
+					} else {
 						$("#msg").html('There was an error in processing, please try again!');
 					}
 				},
