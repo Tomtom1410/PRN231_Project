@@ -14,6 +14,19 @@ namespace BusinessLogic
             _documentRepository = repository;
         }
 
+        public async Task<List<DocumentDto>> DeleteDocumentAsync(List<DocumentDto> documents)
+        {
+            var documentDelete = documents.Select(x => new Document { Id = x.Id}).ToList();
+            var documentReponse = await _documentRepository.DeleteDocumentAsync(documentDelete);
+            if (documentReponse != null && documentReponse.Count > 0)
+            {
+                return documentReponse
+                    .Select(x => new DocumentDto { Id = x.Id, DocumentName = x.DocumentName, PathFile = x.PathFile})
+                    .ToList();
+            }
+            return null;
+        }
+
         public async Task<List<DocumentDto>> GetDocumentsByCourseAsync(long courseId)
         {
             var documents = await _documentRepository.GetDocumentsByCourseAsync(courseId);

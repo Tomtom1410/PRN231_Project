@@ -70,6 +70,7 @@ namespace WebClientProject.Controllers
             using (var uploading = new FileStream(pathFile, FileMode.Create))
             {
                 await formFile.CopyToAsync(uploading);
+                uploading.Close();
                 ViewData["Message"] = "The Selected File " + formFile.FileName + " Is Saved success...";
 
                 ViewBag.LeftMenu = true;
@@ -88,15 +89,14 @@ namespace WebClientProject.Controllers
                         return View();
 
                     case System.Net.HttpStatusCode.Conflict:
-                        var fileInfo = new FileInfo(pathFile);
-                        if (fileInfo.Exists)
+                        if (System.IO.File.Exists(pathFile))
                         {
-                            fileInfo.Delete();
+                            System.IO.File.Delete(pathFile);
                         }
                         return View("Error");
 
                     case System.Net.HttpStatusCode.Forbidden:
-                        return Forbid();
+                        return StatusCode(StatusCodes.Status403Forbidden);
 
                     case System.Net.HttpStatusCode.Unauthorized:
                         return Redirect("../Auth/Login");

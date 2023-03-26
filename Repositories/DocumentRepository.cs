@@ -21,6 +21,44 @@ namespace Repositories
             _logger = logger;
         }
 
+        public async Task<List<Document>> DeleteDocumentAsync(List<Document> documentDelete)
+        {
+            var entities = new List<Document>();
+            foreach (var document in documentDelete)
+            {
+                var d = await _dbContext.Documents.AsNoTracking().FirstOrDefaultAsync(x => x.Id == document.Id);
+                if (d == null)
+                {
+                    return null;
+                }
+                entities.Add(d);
+            }
+
+            if(entities.Count < 0)
+            {
+                return null;
+            }
+
+            var transition = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                _dbContext.Documents.RemoveRange(entities);
+                var result = await _dbContext.SaveChangesAsync();
+                await transition.CommitAsync();
+                if(result > 0)
+                {
+                    return entities;
+                }
+
+                return null;
+            }catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                await transition.RollbackAsync();
+                return null;
+            }
+        }
+
         public async Task<List<Document>> GetDocumentsByCourseAsync(long courseId)
         {
             return await _dbContext.Documents

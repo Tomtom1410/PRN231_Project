@@ -3,6 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession(otp => otp.IdleTimeout = TimeSpan.FromMinutes(30));
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -18,6 +19,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseCors(builder =>
+ builder.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 
 app.UseAuthorization();
 app.UseSession();

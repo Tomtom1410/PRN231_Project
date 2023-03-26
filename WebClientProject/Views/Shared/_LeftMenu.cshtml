@@ -24,9 +24,11 @@
 	}
 </div>
 <script>
-	$(document).keypress(function (event) {
-		if (event.which == '13') {
-			$("#searchCourseFrom").submit();
-		}
+	document.addEventListener("DOMContentLoaded", () => {
+		$("#searchCourseFrom").keypress(function (event) {
+			if (event.which == '13') {
+				$("#searchCourseFrom").submit();
+			}
+		});
 	});
 </script>
