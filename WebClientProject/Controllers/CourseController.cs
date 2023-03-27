@@ -10,7 +10,7 @@ namespace WebClientProject.Controllers
         private const string _url = "https://localhost:7212/api/Course/";
         private const string _urlDocument = "https://localhost:7212/api/File/";
         private const string _urlDocumentForUser = "https://localhost:7212/api/Document/";
-        private const int pageSize = 4;
+        private const int pageSize = 3;
 
         public async Task<IActionResult> Index(string txtSearch, int page = 1)
         {
