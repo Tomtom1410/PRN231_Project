@@ -38,7 +38,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<Prn231ProjectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("prn_db")));
-//builder.Services.AddCors();
+builder.Services.AddCors();
 builder.Services.AddScoped<IAuthBusiness, AuthBusiness>();
 builder.Services.AddScoped<IAccountBusiness, AccountBusiness>();
 builder.Services.AddScoped<ICourseBusiness, CourseBusiness>();

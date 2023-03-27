@@ -16,10 +16,10 @@ namespace WebApiProject.Controllers
            
         }
         [HttpGet]
-        [Route("GetDocByUser/{accountId}")]
-        public async Task<IActionResult> GetCourseByUser([FromRoute] long accountId)
+        [Route("GetDocByUser/{accountId}/{courseId}")]
+        public async Task<IActionResult> GetCourseByUser([FromRoute] long accountId, [FromRoute] long courseId)
         {
-            var doc = await documentBusiness.GetDocumentsByUserAsync(accountId);
+            var doc = await documentBusiness.GetDocumentsByUserAsync(accountId, courseId);
             if (doc == null)
             {
                 return NotFound();

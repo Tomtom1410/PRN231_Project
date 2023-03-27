@@ -21,5 +21,6 @@ namespace DataAccess.Dtos
         public long? CourseId { get; set; }
 
         public long? AccountId { get; set; }
+        public AccountDto? Author { get; set; }
     }
 }

@@ -53,6 +53,19 @@ namespace WebApiProject.Controllers
             var document = await _documentBusiness.GetDocumentsByCourseAsync(courseId);
             return Ok(document);
         }
+        [HttpGet]
+        [Route("GetDocumentsForStudent/{courseId}")]
+        public async Task<IActionResult> GetDocumentsByStudentAsync([FromRoute] long courseId)
+        {
+            var course = await _courseBusiness.GetCourseById(courseId);
+            if (course == null)
+            {
+                return NotFound("Not Found Course");
+            }
+
+            var document = await _documentBusiness.GetDocumentsByStudentAsync(courseId);
+            return Ok(document);
+        }
 
         [HttpPost]
         [Route("DeleteDocuments")]
