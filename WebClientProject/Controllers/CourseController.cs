@@ -33,8 +33,6 @@ namespace WebClientProject.Controllers
 
             ViewBag.Courses = courses;
 
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage responseMessage = await httpClient.GetAsync(_url + $"Search/{txtSearch}");
             switch (responseMessage.StatusCode)
             {
@@ -71,8 +69,7 @@ namespace WebClientProject.Controllers
 
             ViewBag.LeftMenu = true;
             ViewBag.currentUser = account; 
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             HttpResponseMessage responseMessage = await httpClient.GetAsync(_url + id);
             switch (responseMessage.StatusCode)
             {
@@ -103,8 +100,7 @@ namespace WebClientProject.Controllers
 
         private async Task<List<DocumentDto>> GetDocumentOfCourse(long id)
         {
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             var url = _urlDocument + $"GetDocumentsByCourse/{id}";
             HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
             switch (responseMessage.StatusCode)
@@ -118,8 +114,6 @@ namespace WebClientProject.Controllers
         }
         private async Task<List<DocumentDto>> GetDocumentsForStudent(long id)
         {
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var url = _urlDocument + $"GetDocumentsForStudent/{id}";
             HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
             switch (responseMessage.StatusCode)
@@ -133,8 +127,6 @@ namespace WebClientProject.Controllers
         }
         private async Task<List<DocumentDto>> GetDocumentByUser(long? UserId, long? courseId)
         {
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var url = _urlDocumentForUser + $"GetDocByUser/{UserId}/{courseId}";
             HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
             switch (responseMessage.StatusCode)
@@ -156,8 +148,6 @@ namespace WebClientProject.Controllers
                 return Redirect("../Auth/Login");
             }
             ViewBag.LeftMenu = true;
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage responseMessage = await httpClient.GetAsync(_url + id);
             switch (responseMessage.StatusCode)
             {
@@ -204,10 +194,8 @@ namespace WebClientProject.Controllers
                 CourseId = (long)model.Id,
                 IsAuthor = false
             };
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage responseMessage = await httpClient.PostAsJsonAsync(_url + "Enroll", courseAcount);
-            switch (responseMessage.StatusCode)
+			HttpResponseMessage responseMessage = await httpClient.PostAsJsonAsync(_url + "Enroll", courseAcount);
+			switch (responseMessage.StatusCode)
             {
                 case System.Net.HttpStatusCode.OK:
                     return Redirect($"../Details/{model.Id}");
@@ -235,8 +223,7 @@ namespace WebClientProject.Controllers
                 CourseId = id,
                 IsAuthor = false
             };
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             HttpResponseMessage responseMessage = await httpClient.PostAsJsonAsync(_url + "UnEnroll", courseAcount);
             switch (responseMessage.StatusCode)
             {
@@ -270,8 +257,7 @@ namespace WebClientProject.Controllers
 
             ViewBag.LeftMenu = true;
             ViewBag.currentUser = account;
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+      
             HttpResponseMessage responseMessage = await httpClient.GetAsync(_url + id);
             switch (responseMessage.StatusCode)
             {
@@ -317,8 +303,7 @@ namespace WebClientProject.Controllers
             {
                 documentList.Add(new DocumentDto { Id = document});
             } ;
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             HttpResponseMessage responseMessage = await httpClient.PostAsJsonAsync(_urlDocument + "DeleteDocuments", documentList);
             switch (responseMessage.StatusCode)
             {

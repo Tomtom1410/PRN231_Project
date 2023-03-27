@@ -73,7 +73,7 @@
 
         </div>
     }
-    @if (ViewBag.currentUser.IsTeacher == false)
+    @if (ViewBag.currentUser.IsTeacher == false && ViewBag.Documents != null && ViewBag.Documents.Count > 0)
     {
         <div style="text-align: center; padding-top: 12%;">
             <button type="button" class="btn btn-warning">

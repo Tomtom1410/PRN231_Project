@@ -45,8 +45,7 @@ namespace WebClientProject.Controllers
 
         private async Task<CourseDto> GetCourseByIdAsync(int id)
         {
-            var token = GetToken();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             HttpResponseMessage responseMessage = await httpClient.GetAsync(_urlCourse + id);
             switch (responseMessage.StatusCode)
             {
@@ -95,8 +94,7 @@ namespace WebClientProject.Controllers
                 ViewData["Message"] = "The Selected File " + formFile.FileName + " Is Saved success...";
 
                 ViewBag.LeftMenu = true;
-                var token = GetToken();
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                
                 HttpResponseMessage responseMessage = await httpClient.PostAsJsonAsync(_url + "SaveFileInformation", document);
                 switch (responseMessage.StatusCode)
                 {
@@ -129,7 +127,12 @@ namespace WebClientProject.Controllers
         [HttpGet]
         public async Task<IActionResult> DownloadAsync(string fileName, string contentType)
         {
-            string downloadFolder = Path.Combine(_environment.WebRootPath, FOLDER_NAME);
+            var account = GetSession();
+			if (account == null)
+			{
+				return Redirect("../Auth/Login");
+			}
+			string downloadFolder = Path.Combine(_environment.WebRootPath, FOLDER_NAME);
 
             string filePath = Path.Combine(downloadFolder, fileName);
 
