@@ -6,6 +6,8 @@
 
 <h1>@(Model.CourseCode + " " + Model.Author?.FullName) - Edit</h1>
 
+<h4>CourseDto</h4>
+<hr />
 <div class="row">
 	<div class=" col-md-10">
 		<input type="hidden" id="courseId" value="@Model.Id" />
@@ -29,6 +31,7 @@
 			</div>
 		}
 	</div>
+
 </div>
 <script>
 	document.addEventListener("DOMContentLoaded", () => {

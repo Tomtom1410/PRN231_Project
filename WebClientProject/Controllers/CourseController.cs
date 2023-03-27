@@ -9,6 +9,7 @@ namespace WebClientProject.Controllers
     {
         private const string _url = "https://localhost:7212/api/Course/";
         private const string _urlDocument = "https://localhost:7212/api/File/";
+        private const string _urlDocumentForUser = "https://localhost:7212/api/Document/";
         private const int pageSize = 4;
 
         public async Task<IActionResult> Index(string txtSearch, int page = 1)
@@ -64,6 +65,9 @@ namespace WebClientProject.Controllers
             {
                 return Redirect("../Auth/Login");
             }
+            var url = _urlDocumentForUser + $"GetDocByUser/{account.Id}";
+            //HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
+
 
             ViewBag.LeftMenu = true;
             ViewBag.currentUser = account; 
@@ -80,7 +84,9 @@ namespace WebClientProject.Controllers
                         return View("Error");
                     }
                     ViewBag.Documents = await GetDocumentOfCourse(id);
+                    ViewBag.ExcerciseStudent = await GetDocumentsForStudent(id);
                     ViewBag.Courses = courses;
+                    ViewBag.DocUser = await GetDocumentByUser(account.Id,id);
                     return View(response);
 
                 case System.Net.HttpStatusCode.NotFound:
@@ -100,6 +106,36 @@ namespace WebClientProject.Controllers
             var token = GetToken();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var url = _urlDocument + $"GetDocumentsByCourse/{id}";
+            HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
+            switch (responseMessage.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    var response = await responseMessage.Content.ReadFromJsonAsync<List<DocumentDto>>();
+                    return response;
+                default:
+                    return null;
+            }
+        }
+        private async Task<List<DocumentDto>> GetDocumentsForStudent(long id)
+        {
+            var token = GetToken();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var url = _urlDocument + $"GetDocumentsForStudent/{id}";
+            HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
+            switch (responseMessage.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    var response = await responseMessage.Content.ReadFromJsonAsync<List<DocumentDto>>();
+                    return response;
+                default:
+                    return null;
+            }
+        }
+        private async Task<List<DocumentDto>> GetDocumentByUser(long? UserId, long? courseId)
+        {
+            var token = GetToken();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var url = _urlDocumentForUser + $"GetDocByUser/{UserId}/{courseId}";
             HttpResponseMessage responseMessage = await httpClient.GetAsync(url);
             switch (responseMessage.StatusCode)
             {

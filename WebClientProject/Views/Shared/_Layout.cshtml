@@ -16,7 +16,7 @@
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
-				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebClientProject</a>
+				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Document Management</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -44,8 +44,9 @@
 	<div class="row" style="width: 96%;flex-wrap: nowrap; align-items:baseline;">
 		@if (ViewBag.LeftMenu)
 		{
-			<div class="col-md-2" style="margin-left: 2%;">
-				<partial name="_LeftMenu.cshtml" />
+			<div class="col-md-2" style="background-color: #29292a;height: 100vh;">
+				<div style="margin-left: 6%; "><partial name="_LeftMenu.cshtml" /></div>
+				
 			</div>
 		}
 

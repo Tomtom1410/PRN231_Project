@@ -58,12 +58,24 @@ namespace Repositories
                 return null;
             }
         }
-
+        //
         public async Task<List<Document>> GetDocumentsByCourseAsync(long courseId)
         {
             return await _dbContext.Documents
                 .Include(x => x.Account)
                 .Where(x => x.CourseId == courseId && x.Account.IsTeacher == true).ToListAsync();
+        }
+        public async Task<List<Document>> GetDocumentsByStudentAsync(long courseId)
+        {
+            return await _dbContext.Documents
+                .Include(x => x.Account)
+                .Where(x => x.CourseId == courseId && x.Account.IsTeacher == false).ToListAsync();
+        }
+
+        public async Task<List<Document>> GetDocumentsByUserAsync(long id, long courseId)
+        {
+            return await _dbContext.Documents
+                .Where(x => x.AccountId == id && x.CourseId==courseId).ToListAsync();
         }
 
         public async Task<bool> SaveFileInfoAsync(Document documentEntity)
