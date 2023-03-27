@@ -1,38 +1,67 @@
 ﻿@model DataAccess.Dtos.CourseDto
 
 @{
-    ViewData["Title"] = "Edit";
+	ViewData["Title"] = Model.CourseCode + " " + Model.Author?.FullName;
 }
 
-<h1>Edit</h1>
+<h1>@(Model.CourseCode + " " + Model.Author?.FullName) - Edit</h1>
 
 <h4>CourseDto</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CourseName" class="control-label"></label>
-                <input asp-for="CourseName" class="form-control" />
-                <span asp-validation-for="CourseName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+	<div class=" col-md-10">
+		<input type="hidden" id="courseId" value="@Model.Id" />
+		@if (ViewBag.Documents != null && ViewBag.Documents.Count > 0)
+		{
+			<h4>Documents:</h4>
+			foreach (var document in ViewBag.Documents)
+			{
+				<div style="display:flex; justify-content: space-between;">
+					<a href="@Url.Action("Download", "File",
+            new { fileName = document.DocumentName, contentType = document.ContentType })">@document.DocumentOriginalName</a>
+					<p></p>
+					<input name="documentId" value="@document.Id" type="checkbox" class="form-check-input" />
+				</div>
+			}
+			<div class="text-danger" id="msg"></div>
+			<hr />
+			<div style="float: right; margin-top:2%;">
+				<button type="button" id="btnRemove" class="btn btn-danger">Remove</button> ||
+				<a href="@Url.Action("Details", "Course", new {Id = Model.Id})">Back to course</a>
+			</div>
+		}
+	</div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		$("#btnRemove").on("click", function () {
+			var documents = $('input[name="documentId"]:checked').map(function () {
+				return this.value;
+			}).get();
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+			$.ajax({
+				url: 'Edit',
+				method: 'POST',
+				data: {
+					documents: documents
+				},
+				success: function (response) {
+					if (response == 'success') {
+						let courseId = $("#courseId").val();
+						window.location.href = `../Details/${courseId}`;
+					} else {
+						$("#msg").html('There was an error in processing, please try again!');
+					}
+				},
+				error: function (xhr, status, error) {
+					// Xử lý lỗi nếu có
+					console.log(error);
+				}
+			});
+		});
+	});
+</script>
+

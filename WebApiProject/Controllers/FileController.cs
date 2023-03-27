@@ -42,10 +42,10 @@ namespace WebApiProject.Controllers
 
         [HttpGet]
         [Route("GetDocumentsByCourse/{courseId}")]
-        public async Task<IActionResult> GetDocumentsByCourse([FromRoute]long courseId)
+        public async Task<IActionResult> GetDocumentsByCourse([FromRoute] long courseId)
         {
             var course = await _courseBusiness.GetCourseById(courseId);
-            if(course == null)
+            if (course == null)
             {
                 return NotFound("Not Found Course");
             }
@@ -53,5 +53,17 @@ namespace WebApiProject.Controllers
             var document = await _documentBusiness.GetDocumentsByCourseAsync(courseId);
             return Ok(document);
         }
-    }
+
+        [HttpPost]
+        [Route("DeleteDocuments")]
+        public async Task<IActionResult> DeleteDocuments([FromBody] List<DocumentDto> documents)
+        {
+            var response = await _documentBusiness.DeleteDocumentAsync(documents);
+            if(response == null)
+            {
+                return Conflict();
+            }
+            return Ok(response);
+        } 
+    } 
 }

@@ -10,6 +10,7 @@ namespace BusinessLogic.Interfaces
 {
 	public interface IDocumentBusiness
 	{
+		Task <List<DocumentDto>> DeleteDocumentAsync(List<DocumentDto> documents);
 		Task<List<DocumentDto>> GetDocumentsByCourseAsync(long courseId);
 		Task<List<DocumentDto>> GetDocumentsByUserAsync(long courseId);
 		Task<bool> saveFileInfoAsync(Document documentEntity);

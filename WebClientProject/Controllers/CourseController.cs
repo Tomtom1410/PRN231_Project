@@ -50,7 +50,7 @@ namespace WebClientProject.Controllers
                     return NotFound();
 
                 case System.Net.HttpStatusCode.Forbidden:
-                    return Forbid();
+                    return StatusCode(StatusCodes.Status403Forbidden);
 
                 case System.Net.HttpStatusCode.Unauthorized:
                     return Redirect("../Auth/Login");
@@ -79,8 +79,7 @@ namespace WebClientProject.Controllers
 
 
             ViewBag.LeftMenu = true;
-            ViewBag.isTeacher = account.IsTeacher;
-
+            ViewBag.currentUser = account; 
             var token = GetToken();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage responseMessage = await httpClient.GetAsync(_url + id);
@@ -102,7 +101,7 @@ namespace WebClientProject.Controllers
                     return NotFound();
 
                 case System.Net.HttpStatusCode.Forbidden:
-                    return Forbid();
+                    return StatusCode(StatusCodes.Status403Forbidden);
 
                 case System.Net.HttpStatusCode.Unauthorized:
                     return Redirect("../Auth/Login");
@@ -165,7 +164,7 @@ namespace WebClientProject.Controllers
                     ViewBag.Documents = await GetDocumentOfCourse(id);
                     ViewBag.Courses = courses;
                     var isEnroll = response.Students.Any(x => x.Id == account.Id);
-                    if (isEnroll)
+                    if (isEnroll || account.IsTeacher == true)
                     {
                         return Redirect($"../Details/{id}");
                     }
@@ -176,7 +175,7 @@ namespace WebClientProject.Controllers
                     return NotFound();
 
                 case System.Net.HttpStatusCode.Forbidden:
-                    return Forbid();
+                    return StatusCode(StatusCodes.Status403Forbidden);
 
                 case System.Net.HttpStatusCode.Unauthorized:
                     return Redirect("../Auth/Login");
@@ -208,7 +207,7 @@ namespace WebClientProject.Controllers
                 case System.Net.HttpStatusCode.Conflict:
                     return View("Error");
                 case System.Net.HttpStatusCode.Forbidden:
-                    return Forbid();
+                    return StatusCode(StatusCodes.Status403Forbidden);
                 case System.Net.HttpStatusCode.Unauthorized:
                     return Redirect("../Auth/Login");
             }
@@ -239,11 +238,108 @@ namespace WebClientProject.Controllers
                 case System.Net.HttpStatusCode.Conflict:
                     return View("Error");
                 case System.Net.HttpStatusCode.Forbidden:
-                    return Forbid();
+                    return StatusCode(StatusCodes.Status403Forbidden);
                 case System.Net.HttpStatusCode.Unauthorized:
                     return Redirect("../Auth/Login");
             }
             return View();
+        }
+
+        
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(long id)
+        {
+            var account = GetSession();
+            if (account == null)
+            {
+                return Redirect("../Auth/Login");
+            }
+
+            if (account.IsTeacher == false)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+
+            ViewBag.LeftMenu = true;
+            ViewBag.currentUser = account;
+            var token = GetToken();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage responseMessage = await httpClient.GetAsync(_url + id);
+            switch (responseMessage.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    var response = await responseMessage.Content.ReadFromJsonAsync<CourseDto>();
+                    if (response.Author.Id != account.Id)
+                    {
+                        return StatusCode(StatusCodes.Status403Forbidden);
+                    }
+                    var courses = await GetListCourseOfUserAsync();
+                    if (courses == null)
+                    {
+                        return View("Error");
+                    }
+
+                    ViewBag.Documents = await GetDocumentOfCourse(id);
+                    ViewBag.Courses = courses;
+                    return View(response);
+
+                case System.Net.HttpStatusCode.NotFound:
+                    return NotFound();
+
+                case System.Net.HttpStatusCode.Forbidden:
+                    return StatusCode(StatusCodes.Status403Forbidden);
+
+                case System.Net.HttpStatusCode.Unauthorized:
+                    return Redirect("../Auth/Login");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(long[] documents)
+        {
+            var account = GetSession();
+            if (account == null)
+            {
+                return Redirect("../Auth/Login");
+            }
+
+            var documentList = new List<DocumentDto>();
+            foreach (var document in documents)
+            {
+                documentList.Add(new DocumentDto { Id = document});
+            } ;
+            var token = GetToken();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage responseMessage = await httpClient.PostAsJsonAsync(_urlDocument + "DeleteDocuments", documentList);
+            switch (responseMessage.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    var response = await responseMessage.Content.ReadFromJsonAsync<List<DocumentDto>>();
+                    if(response != null)
+                    {
+                        foreach (var document in response)
+                        {
+                            if (System.IO.File.Exists(document.PathFile))
+                            {
+                                System.IO.File.Delete(document.PathFile);
+                            }
+                        }
+                    }
+                    return Json("success");
+
+                case System.Net.HttpStatusCode.NotFound:
+                    return NotFound();
+
+                case System.Net.HttpStatusCode.Forbidden:
+                    return StatusCode(StatusCodes.Status403Forbidden);
+
+                case System.Net.HttpStatusCode.Unauthorized:
+                    return Redirect("../Auth/Login");
+            }
+
+            return Json("Failed");
         }
     }
 }

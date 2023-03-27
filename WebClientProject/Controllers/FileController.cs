@@ -8,6 +8,8 @@ namespace WebClientProject.Controllers
     public class FileController : BaseController
     {
         private const string _url = "https://localhost:7212/api/File/";
+        private const string _urlCourse = "https://localhost:7212/api/Course/";
+
         private readonly HttpClient _httpClient = null;
         private readonly IWebHostEnvironment _environment;
         private const string FOLDER_NAME = "Download";
@@ -21,7 +23,7 @@ namespace WebClientProject.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload(int id)
         {
             var account = GetSession();
             if (account == null)
@@ -29,17 +31,35 @@ namespace WebClientProject.Controllers
                 return Redirect("../Auth/Login");
             }
             ViewBag.LeftMenu = true;
+
+            var course = await GetCourseByIdAsync(id);
             var courses = await GetListCourseOfUserAsync();
-            if (courses == null)
+            if (courses == null || course == null)
             {
                 return View("Error");
             }
             ViewBag.Courses = courses;
+            ViewBag.CourseUploadId = course.Id;
             return View();
         }
 
+        private async Task<CourseDto> GetCourseByIdAsync(int id)
+        {
+            var token = GetToken();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage responseMessage = await httpClient.GetAsync(_urlCourse + id);
+            switch (responseMessage.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    var response = await responseMessage.Content.ReadFromJsonAsync<CourseDto>();
+                    return response;
+                default:
+                    return null;
+            }
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Upload(IFormFile formFile)
+        public async Task<IActionResult> Upload(IFormFile formFile, long courseId)
         {
             var account = GetSession();
             if (account == null)
@@ -54,14 +74,15 @@ namespace WebClientProject.Controllers
             }
 
             ViewBag.LeftMenu = true;
+            ViewBag.CourseUploadId = courseId;
             string fileExtention = Path.GetExtension(formFile.FileName);
             var fileName = Guid.NewGuid().ToString() + fileExtention;
             var pathFile = Path.Combine(_environment.WebRootPath, FOLDER_NAME, fileName);
-            
+
             var document = new DocumentDto
             {
                 AccountId = account.Id,
-                CourseId = 1,
+                CourseId = courseId,
                 PathFile = pathFile,
                 DocumentName = fileName,
                 ContentType = formFile.ContentType,
@@ -70,6 +91,7 @@ namespace WebClientProject.Controllers
             using (var uploading = new FileStream(pathFile, FileMode.Create))
             {
                 await formFile.CopyToAsync(uploading);
+                uploading.Close();
                 ViewData["Message"] = "The Selected File " + formFile.FileName + " Is Saved success...";
 
                 ViewBag.LeftMenu = true;
@@ -88,15 +110,14 @@ namespace WebClientProject.Controllers
                         return View();
 
                     case System.Net.HttpStatusCode.Conflict:
-                        var fileInfo = new FileInfo(pathFile);
-                        if (fileInfo.Exists)
+                        if (System.IO.File.Exists(pathFile))
                         {
-                            fileInfo.Delete();
+                            System.IO.File.Delete(pathFile);
                         }
                         return View("Error");
 
                     case System.Net.HttpStatusCode.Forbidden:
-                        return Forbid();
+                        return StatusCode(StatusCodes.Status403Forbidden);
 
                     case System.Net.HttpStatusCode.Unauthorized:
                         return Redirect("../Auth/Login");

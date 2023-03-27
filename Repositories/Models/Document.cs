@@ -15,9 +15,9 @@ public partial class Document
 
     public string? PathFile { get; set; }
 
-    public long? CourseId { get; set; }
-
     public long? AccountId { get; set; }
+
+    public long? CourseId { get; set; }
 
     public virtual Account? Account { get; set; }
 

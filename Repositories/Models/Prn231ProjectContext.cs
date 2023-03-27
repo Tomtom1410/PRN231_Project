@@ -111,10 +111,18 @@ public partial class Prn231ProjectContext : DbContext
 
         modelBuilder.Entity<Document>(entity =>
         {
-            entity.Property(e => e.ContentType).HasMaxLength(50);
-            entity.Property(e => e.DocumentName).HasMaxLength(50);
-            entity.Property(e => e.DocumentOriginalName).HasMaxLength(50);
-            entity.Property(e => e.PathFile).HasMaxLength(255);
+            entity.Property(e => e.ContentType)
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+            entity.Property(e => e.DocumentName)
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+            entity.Property(e => e.DocumentOriginalName)
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+            entity.Property(e => e.PathFile)
+                .HasMaxLength(1000)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Account).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.AccountId)
